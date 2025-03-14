@@ -28,7 +28,7 @@ export class ChatwootService {
   async findContact(vkUserId: any) {
     try {
       console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER);
-      const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts/${Number.parseInt(vkUserId)}`, {
+      const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${Number.parseInt(vkUserId)}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
       console.log("findContact.response", response);
@@ -44,7 +44,7 @@ export class ChatwootService {
 
   async createContact(vkUserId: any, message: any) {
     try {
-      const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts`, {
+      const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts`, {
         inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
         name: message.name,
         identifier: vkUserId,
@@ -84,7 +84,7 @@ export class ChatwootService {
       return conversation.conversationIdChatwoot;
     }
 
-    const newConversation = await this.client.post(`/api/v1/accounts/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/conversations`, {
+    const newConversation = await this.client.post(`/api/v1/accounts/${process.env.CHATWOOT_INBOX_INDENTIFER}/conversations`, {
       inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
       contact_id: userIdTg,
       status: 'open'
