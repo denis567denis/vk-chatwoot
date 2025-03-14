@@ -14,7 +14,7 @@ export class ChatwootService {
     try {
       console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER, "userIdTg", userIdTg, "conversationId", conversationId);
       await this.client.post(
-        `/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts/${userIdTg}/conversations/${conversationId}/messages`,
+        `/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${userIdTg}/conversations/${conversationId}/messages`,
         {
           content: message.text,
           message_type: 'incoming',
@@ -86,11 +86,7 @@ export class ChatwootService {
       return conversation.conversationIdChatwoot;
     }
 
-    const newConversation = await this.client.post(`/api/v1/accounts/${process.env.CHATWOOT_INBOX_INDENTIFER}/conversations`, {
-      inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
-      contact_id: userIdTg,
-      status: 'open'
-    }, {
+    const newConversation = await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_ID}/contacts/${userIdTg}/conversations`, {
       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
     });
     console.log("handleWebhook.createConversationIfNeeded.newConversation", newConversation);
