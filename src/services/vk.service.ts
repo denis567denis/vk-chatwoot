@@ -1,23 +1,19 @@
 import axios, { AxiosInstance } from 'axios';
-import { VKWebhookEvent, VKAttachment } from '../types/vk';
+import { VKWebhookEvent } from '../types/vk';
 import { logger } from '../config/logger';
 import { VKCommunity } from '../models/vk-community.model';
-import { StorageService } from './storage.service';
+import { UserGroup } from '../models/userGroup.model';
 
 export class VKService {
   private client: AxiosInstance;
-  private storage: StorageService;
 
   constructor() {
     this.client = axios.create({
       baseURL: 'https://api.vk.com/method/',
       params: { v: process.env.VK_API_VERSION },
     });
-    this.storage = new StorageService();
   }
   async processMessage(event: VKWebhookEvent) {
-    console.log("event.object.message", event.object.message);
-    console.log("event.object.message", ...event.object.message.attachments);
     return {
       text: event.object.message.text,
       attachments:  await this.processAttachments(event.object.message.attachments)
@@ -144,13 +140,14 @@ export class VKService {
       });
 
       return response.data.response.doc;
-    } catch (error) {
-      logger.error('Failed to save document in VK:', error);
+    } catch (error) {;
+      logger.error('Failed to save document in VK:', error)
       throw error;
     }
   }
 
   async getVKUserInfo(vkUserId: any) {
+    try {
     const response = await this.client.get('users.get', {
       params: {
           user_ids: vkUserId,
@@ -164,5 +161,8 @@ export class VKService {
       name: `${userData.first_name} ${userData.last_name}`,
       avatar: userData.photo_100
   };
+  } catch(error) {
+    logger.error('Failed to getVKUserInfo:', error)
+  }
   }
 }

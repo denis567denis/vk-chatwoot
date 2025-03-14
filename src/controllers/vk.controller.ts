@@ -19,22 +19,23 @@ export class VKController {
 
     try {
       if(event.type ===  'message_new') {
-        let userId = await this.chatwootService.findContact(event.object.message.from_id);
+        let userIdTg = await this.chatwootService.findContact(event.object.message.from_id);
   
-        if(!userId) {
+        if(!userIdTg) {
           const user = await this.vkService.getVKUserInfo(event.object.message.from_id);
-          userId = await this.chatwootService.createContact(event.object.message.from_id, {
-            name: user.name,
-            avatar: user.avatar
-          });
+          if(user) {
+            userIdTg = await this.chatwootService.createContact(event.object.message.from_id, {
+              name: user.name,
+              avatar: user.avatar
+            });
+          }
   
         }
   
-        const conversationId = await this.chatwootService.createConversationIfNeeded(userId);
-        console.log('req.body',req.body);
+        const conversationId = await this.chatwootService.createConversationIfNeeded(userIdTg, event.group_id);
         const messageData: any = await this.vkService.processMessage(event);
         console.log("handleWebhook.messageData", messageData);
-        await this.chatwootService.forwardToChatwoot(conversationId, messageData);
+        await this.chatwootService.forwardToChatwoot(conversationId, userIdTg, messageData);
         res.status(200).send('ok');
       }
     } catch (error) {

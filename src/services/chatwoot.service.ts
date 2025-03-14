@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { logger } from '../config/logger';
+import { UserGroup } from '../models/userGroup.model';
 
 export class ChatwootService {
   private client = axios.create({
@@ -9,11 +10,10 @@ export class ChatwootService {
       'Content-Type': ['application/json', 'charset=utf-8'],
     },
   });
-
-  async forwardToChatwoot(conversationId: number , message: any) {
+  async forwardToChatwoot(conversationId: number, userIdTg: number , message: any) {
     try {
       await this.client.post(
-        `/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations/${conversationId}/messages`,
+        `/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts/${userIdTg}/conversations/${conversationId}/messages`,
         {
           content: message.text,
           message_type: 'incoming',
@@ -24,12 +24,10 @@ export class ChatwootService {
       throw error;
     }
   }
-
   async findContact(vkUserId: any) {
     try {
-      const response =  await this.client.get(`/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/contacts`, {
+      const response =  await this.client.get(`/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
-        params: { identifier: vkUserId }
       });
       if (response.data.payload.length > 0) {
         return response.data.payload[0].id;
@@ -43,7 +41,7 @@ export class ChatwootService {
 
   async createContact(vkUserId: any, message: any) {
     try {
-      const newContact =  await this.client.post(`/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/contacts`, {
+      const newContact =  await this.client.post(`/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts`, {
         inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
         name: message.name,
         identifier: vkUserId,
@@ -52,6 +50,10 @@ export class ChatwootService {
        headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
       });
   
+      await UserGroup.upsert({
+        userTgId: vkUserId,
+      });
+
       return newContact.data.id;
     } catch (error) {
     logger.error('Chatwoot API contact Error:', error);
@@ -59,23 +61,38 @@ export class ChatwootService {
     }
   }
 
-  async createConversationIfNeeded(contactId: any) {
+  async createConversationIfNeeded(userIdTg: number, groubIdTg: number) {
     try {
-    const response = await this.client.get(`/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations`, {
-      headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
-      params: { contact_id: contactId }
+    const user = await UserGroup.findOne({
+      where: { userIdTg }
+    });
+    const conversation = user?.conversationList?.find((value)=> {
+      if(value.groubIdTg === groubIdTg) {
+        return true;
+      }
+      return false;
     });
   
-    if (response?.data?.data?.payload?.length > 0) {
-      return response.data.data.payload[0].id;
+    if (conversation?.conversationIdChatwoot) {
+      return conversation.conversationIdChatwoot;
     }
 
     const newConversation = await this.client.post(`/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations`, {
       inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
-      contact_id: contactId,
+      contact_id: userIdTg,
       status: 'open'
     }, {
       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
+    });
+    user?.conversationList?.push({
+      groubIdTg,
+      conversationIdChatwoot: newConversation.data.id
+    })
+
+    await UserGroup.update({
+      conversationList : user?.conversationList
+    }, {
+      where: { userIdTg }
     });
     return newConversation.data.id;
       }catch (error) {

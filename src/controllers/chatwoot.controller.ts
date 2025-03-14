@@ -15,23 +15,21 @@ export class ChatwootController {
   });
 
   async handleChatwootEvent(req: Request, res: Response) {
-    const { message, inbox_id } = req.body;
+    const { event, message } = req.body;
     console.log("handleChatwootEvent.req.body", req.body);
     try {
-      const community = await this.vkService.getCommunityByInboxId(inbox_id);
-      if (!community) {
-        res.status(404).json({ error: 'Community not found' });
-        return; 
+      if (event === 'message_created') {
+        const result = await this.vkService.sendMessage({
+          userId: this.extractVkUserId(message.sender.identifier),
+          text: message.content,
+          attachments: await this.processAttachments(message.attachments),
+          accessToken: process.env.VK_ACCESS_TOKEN || '',
+        });
+        res.status(200).json({ status: 'success' });
+        return;
       }
 
-      const result = await this.vkService.sendMessage({
-        userId: this.extractVkUserId(message.sender.identifier),
-        text: message.content,
-        attachments: await this.processAttachments(message.attachments),
-        accessToken: community.access_token,
-      });
-
-      res.status(200).json({ status: 'success' });
+      res.status(400).send('Unsupported event type');
       return;
     } catch (error) {
       logger.error('Chatwoot webhook error:', error);
@@ -45,37 +43,37 @@ export class ChatwootController {
     return parseInt(match[1], 10);
   }
 
-  async syncHistory(req: Request, res: Response) {
-    const { groupId } = req.params;
+  // async syncHistory(req: Request, res: Response) {
+  //   const { groupId } = req.params;
 
-    try {
-      // Получаем настройки сообщества
-      const community = await this.vkService.getCommunitySettings(Number(groupId));
-      if (!community) {
-        res.status(404).json({ error: 'Community not found' });
-        return; 
-      }
+  //   try {
+  //     // Получаем настройки сообщества
+  //     const community = await this.vkService.getCommunitySettings(Number(groupId));
+  //     if (!community) {
+  //       res.status(404).json({ error: 'Community not found' });
+  //       return; 
+  //     }
 
-      const vkMessages = await this.vkService.getMessagesHistory({
-        groupId: community.group_id,
-        accessToken: community.access_token,
-      });
+  //     const vkMessages = await this.vkService.getMessagesHistory({
+  //       groupId: community.group_id,
+  //       accessToken: community.access_token,
+  //     });
 
-      await this.syncMessages({
-        inboxId: Number.parseInt(process.env.CHATWOOT_INBOX_ID || ''),
-        messages: vkMessages,
-      });
+  //     await this.syncMessages({
+  //       inboxId: Number.parseInt(process.env.CHATWOOT_INBOX_ID || ''),
+  //       messages: vkMessages,
+  //     });
 
-      res.status(200).json({
-        message: 'Sync completed successfully',
-        syncedMessages: vkMessages.length,
-      });
-      return;
-    } catch (error) {
-      logger.error('Failed to sync history:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  }
+  //     res.status(200).json({
+  //       message: 'Sync completed successfully',
+  //       syncedMessages: vkMessages.length,
+  //     });
+  //     return;
+  //   } catch (error) {
+  //     logger.error('Failed to sync history:', error);
+  //     res.status(500).json({ error: 'Internal server error' });
+  //   }
+  // }
 
   async syncMessages(params: {
     inboxId: number;
