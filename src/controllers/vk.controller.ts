@@ -50,6 +50,7 @@ export class VKController {
     });
     
     if (community) {
+      console.log("handleConfirmation.community",community);
       res.send(community.confirmation_code);
     } else {
       res.status(404).send('Community not found');
