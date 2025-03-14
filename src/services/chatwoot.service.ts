@@ -30,6 +30,7 @@ export class ChatwootService {
       const response =  await this.client.get(`/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
+      console.log("findContact.response", response);
       if (response.data.payload.length > 0) {
         return response.data.payload[0].id;
       }
