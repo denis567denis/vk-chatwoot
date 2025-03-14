@@ -19,26 +19,28 @@ export class VKController {
     }
 
     try {
-      let userId = await this.chatwootService.findContact(event.object.message.from_id);
-      console.log("handleWebhook.userId", userId);
-
-      if(!userId) {
-        const user = await this.vkService.getVKUserInfo(event.object.message.from_id);
-        console.log("handleWebhook.user", user);
-        userId = await this.chatwootService.createContact(event.object.message.from_id, {
-          name: user.name,
-          avatar: user.avatar
-        });
-
+      if(event.type ===  'message_new') {
+        let userId = await this.chatwootService.findContact(event.object.message.from_id);
         console.log("handleWebhook.userId", userId);
+  
+        if(!userId) {
+          const user = await this.vkService.getVKUserInfo(event.object.message.from_id);
+          console.log("handleWebhook.user", user);
+          userId = await this.chatwootService.createContact(event.object.message.from_id, {
+            name: user.name,
+            avatar: user.avatar
+          });
+  
+          console.log("handleWebhook.userId", userId);
+        }
+  
+        const conversationId = await this.chatwootService.createConversationIfNeeded(userId);
+        console.log("handleWebhook.conversationId", conversationId);
+        const messageData: any = await this.vkService.processMessage(event);
+        console.log("handleWebhook.messageData", messageData);
+        await this.chatwootService.forwardToChatwoot(conversationId, messageData);
+        res.status(200).send('ok');
       }
-
-      const conversationId = await this.chatwootService.createConversationIfNeeded(userId);
-      console.log("handleWebhook.conversationId", conversationId);
-      const messageData: any = await this.vkService.processMessage(event);
-      console.log("handleWebhook.messageData", messageData);
-      await this.chatwootService.forwardToChatwoot(conversationId, messageData);
-      res.status(200).send('ok');
     } catch (error) {
       res.status(500).send('Internal Server Error');
     }

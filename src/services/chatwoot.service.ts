@@ -61,10 +61,12 @@ export class ChatwootService {
   }
 
   async createConversationIfNeeded(contactId: any) {
+    try {
     const response = await this.client.get(`/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations`, {
       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       params: { contact_id: contactId }
     });
+    console.log('createConversationIfNeeded.response', response);
   
     if (response.data.payload.length > 0) {
       return response.data.payload[0].id;
@@ -78,7 +80,12 @@ export class ChatwootService {
       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
     });
   
+    console.log('createConversationIfNeeded.newConversation', newConversation);
     return newConversation.data.id;
+      }catch (error) {
+      logger.error('Chatwoot API contact Error:', error);
+      throw error;
+      }
   }
   
 }
