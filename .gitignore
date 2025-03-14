@@ -2,4 +2,4 @@ node_modules
 /.env
 dist
 logs
-database.sqlite
+database1.sqlite

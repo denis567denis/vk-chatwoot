@@ -36,7 +36,7 @@ export class VKController {
         }
   
         const conversationId = await this.chatwootService.createConversationIfNeeded(userIdTg, event.group_id);
-        console.log("handleWebhook.userIdTg", conversationId);
+        console.log("handleWebhook.conversationId", conversationId);
         const messageData: any = await this.vkService.processMessage(event);
         console.log("handleWebhook.messageData", messageData);
         await this.chatwootService.forwardToChatwoot(conversationId, userIdTg, messageData);
