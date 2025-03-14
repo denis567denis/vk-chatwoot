@@ -27,11 +27,9 @@ export class ChatwootService {
   }
   async findContact(vkUserId: any) {
     try {
-      console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER);
       const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
-      console.log("findContact.response", response);
       if (response.data.payload.length > 0) {
         return response.data.payload[0].id;
       }
@@ -61,10 +59,11 @@ export class ChatwootService {
       }
       console.log("handleWebhook.createContact.newContact", newContact);
   
-      await UserGroup.upsert({
+      const userR = await UserGroup.upsert({
         userTgId: vkUserId,
       });
 
+      console.log("userR",userR);
       return newContact.data.id;
   }
 
