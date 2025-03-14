@@ -20,7 +20,7 @@ export class VKService {
     console.log("event.object.message", ...event.object.message.attachments);
     return {
       text: event.object.message.text,
-      attachments:  this.processAttachments(event.object.message.attachments)
+      attachments:  await this.processAttachments(event.object.message.attachments)
     };
   }
 
