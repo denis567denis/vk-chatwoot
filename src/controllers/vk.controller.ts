@@ -55,6 +55,7 @@ export class VKController {
         groupId: community.group_id,
         accessToken: community.access_token,
         chatwootInboxId: community.chatwoot_inbox_id,
+        confirmation_code: community.confirmation_code
       });
       return;
     } catch (error) {
