@@ -19,6 +19,7 @@ export class VKController {
 
     try {
       if(event.type === 'message_new') {
+        console.log("event", event);
         let userIdTg = await this.chatwootService.findContact(event.object.message.from_id);
         console.log("handleWebhook.userIdTg", userIdTg);
         if(!userIdTg) {
