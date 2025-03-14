@@ -23,7 +23,7 @@ export class VKController {
       console.log("handleWebhook.userId", userId);
 
       if(!userId) {
-        const user = await this.vkService.getVKUserInfo(event.group_id,event.object.message.from_id);
+        const user = await this.vkService.getVKUserInfo(event.object.message.from_id);
         console.log("handleWebhook.user", user);
         userId = await this.chatwootService.createContact(event.object.message.from_id, {
           name: user.name,

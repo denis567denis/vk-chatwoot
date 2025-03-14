@@ -159,16 +159,12 @@ export class VKService {
     }
   }
 
-  async getVKUserInfo(group_id: any, vkUserId: any) {
-    const community = await VKCommunity.findOne({ 
-      where: { group_id: group_id } 
-    });
-
+  async getVKUserInfo(vkUserId: any) {
     const response = await this.client.get('users.get', {
       params: {
           user_ids: vkUserId,
           fields: 'photo_100',
-          access_token: community?.access_token,
+          access_token: process.env.VK_ACCESS_TOKEN,
       }
   });
 
