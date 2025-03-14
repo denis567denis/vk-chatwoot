@@ -68,7 +68,7 @@ export class ChatwootService {
     });
     console.log('createConversationIfNeeded.response', response);
   
-    if (response.data.payload.length > 0) {
+    if (response.data.data.payload.length > 0) {
       return response.data.payload[0].id;
     }
 
