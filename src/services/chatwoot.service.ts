@@ -49,6 +49,8 @@ export class ChatwootService {
      }, {
        headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
       });
+
+      console.log("handleWebhook.createContact.newContact", newContact);
   
       await UserGroup.upsert({
         userTgId: vkUserId,
@@ -66,6 +68,7 @@ export class ChatwootService {
     const user = await UserGroup.findOne({
       where: { userIdTg }
     });
+    console.log("handleWebhook.createConversationIfNeeded.user", user);
     const conversation = user?.conversationList?.find((value)=> {
       if(value.groupIdTg === groupIdTg) {
         return true;
@@ -73,6 +76,7 @@ export class ChatwootService {
       return false;
     });
   
+    console.log("handleWebhook.createConversationIfNeeded.conversation", conversation);
     if (conversation?.conversationIdChatwoot) {
       return conversation.conversationIdChatwoot;
     }
@@ -84,6 +88,7 @@ export class ChatwootService {
     }, {
       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
     });
+    console.log("handleWebhook.createConversationIfNeeded.newConversation", newConversation);
     user?.conversationList?.push({
       groupIdTg,
       conversationIdChatwoot: newConversation.data.id
