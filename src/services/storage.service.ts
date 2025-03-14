@@ -33,8 +33,8 @@ export class StorageService {
         'https://api.vk.com/method/photos.saveMessagesPhoto',
         {
           ...uploadResponse.data,
-          access_token: await this.getCommunityToken(groupId),
-          v: process.env.VK_API_VERSION
+          access_token: process.env.VK_ACCESS_TOKEN,
+          v: process.env.VK_API_VERSION,
         }
       );
 
@@ -67,7 +67,7 @@ export class StorageService {
         'https://api.vk.com/method/docs.save',
         {
           ...uploadResponse.data,
-          access_token: await this.getCommunityToken(groupId),
+          access_token: process.env.VK_ACCESS_TOKEN,
           v: process.env.VK_API_VERSION
         }
       );
@@ -77,12 +77,6 @@ export class StorageService {
       logger.error('Document upload failed:', error);
       throw error;
     }
-  }
-
-  private async getCommunityToken(groupId: number): Promise<string> {
-    const community = await VKCommunity.findOne({ where: { group_id: groupId } });
-    if (!community) throw new Error('Community not found');
-    return community.access_token;
   }
 
   private async getVKUploadUrl(groupId: number, type: 'photo' | 'doc'): Promise<string> {
@@ -95,7 +89,7 @@ export class StorageService {
       {
         params: {
           group_id: groupId,
-          access_token: await this.getCommunityToken(groupId),
+          access_token: process.env.VK_ACCESS_TOKEN,
           v: process.env.VK_API_VERSION
         }
       }

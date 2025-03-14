@@ -12,7 +12,6 @@ export class VKController {
   async handleWebhook(req: Request, res: Response) {
     const event = req.body as VKWebhookEvent;
 
-    console.log("handleWebhook.event", event);
     if (event.type === 'confirmation') {
       await this.handleConfirmation(event, res);
       return; 
@@ -21,21 +20,17 @@ export class VKController {
     try {
       if(event.type ===  'message_new') {
         let userId = await this.chatwootService.findContact(event.object.message.from_id);
-        console.log("handleWebhook.userId", userId);
   
         if(!userId) {
           const user = await this.vkService.getVKUserInfo(event.object.message.from_id);
-          console.log("handleWebhook.user", user);
           userId = await this.chatwootService.createContact(event.object.message.from_id, {
             name: user.name,
             avatar: user.avatar
           });
   
-          console.log("handleWebhook.userId", userId);
         }
   
         const conversationId = await this.chatwootService.createConversationIfNeeded(userId);
-        console.log("handleWebhook.conversationId", conversationId);
         const messageData: any = await this.vkService.processMessage(event);
         console.log("handleWebhook.messageData", messageData);
         await this.chatwootService.forwardToChatwoot(conversationId, messageData);
@@ -52,7 +47,6 @@ export class VKController {
     });
     
     if (community) {
-      console.log("handleConfirmation.community",community);
       res.send(community.confirmation_code);
     } else {
       res.status(404).send('Community not found');
