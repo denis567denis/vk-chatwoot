@@ -3,7 +3,7 @@ import { Table, Column, Model, DataType } from 'sequelize-typescript';
 @Table
 export class UserGroup extends Model {
   @Column
-  userTgId!: number;
+  userIdTg!: number;
 
   @Column({
     type: DataType.JSON,
