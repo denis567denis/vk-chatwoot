@@ -26,9 +26,7 @@ export class ChatwootService {
   }
   async findContact(vkUserId: any) {
     try {
-      const response =  await this.client.get(`/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts/${vkUserId}`, {
-        headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
-      });
+      const response =  await this.client.get(`/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts/${vkUserId}`);
       if (response.data.payload.length > 0) {
         return response.data.payload[0].id;
       }
@@ -46,9 +44,7 @@ export class ChatwootService {
         name: message.name,
         identifier: vkUserId,
         avatar_url: message.avatar
-     }, {
-       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
-      });
+     });
 
       console.log("handleWebhook.createContact.newContact", newContact);
   
@@ -85,8 +81,6 @@ export class ChatwootService {
       inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
       contact_id: userIdTg,
       status: 'open'
-    }, {
-      headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
     });
     console.log("handleWebhook.createConversationIfNeeded.newConversation", newConversation);
     user?.conversationList?.push({
