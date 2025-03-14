@@ -6,7 +6,7 @@ import { asyncHandler } from '../utils/async-handler';
 export const vkRouter = Router();
 const controller = new VKController();
 
-vkRouter.post('/webhook', asyncHandler(controller.handleWebhook));
+vkRouter.post('/webhook',asyncHandler((req, res) => controller.handleWebhook(req, res)));
 
 vkRouter.get('/communities/:groupId', asyncHandler(controller.getCommunitySettings));
 
