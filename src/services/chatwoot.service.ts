@@ -59,7 +59,7 @@ export class ChatwootService {
       }
       console.log("handleWebhook.createContact.newContact", newContact);
   
-      const userR = await UserGroup.upsert({
+      const [...userR] = await UserGroup.upsert({
         userTgId: vkUserId,
       });
 
