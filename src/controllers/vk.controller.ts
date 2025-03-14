@@ -29,7 +29,7 @@ export class VKController {
               name: user.name,
               avatar: user.avatar
             });
-            console.log("handleWebhook.userIdTg", userIdTg);
+            console.log("handleWebhook.userIdTg2", userIdTg);
           }
   
         }

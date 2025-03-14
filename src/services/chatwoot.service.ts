@@ -64,11 +64,12 @@ export class ChatwootService {
       });
 
       console.log("userR",userR);
-      return newContact.data.id;
+      return newContact.data.identifier;
   }
 
   async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
     try {
+      console.log("userIdTg", userIdTg);
     const user = await UserGroup.findOne({
       where: { userIdTg }
     });
