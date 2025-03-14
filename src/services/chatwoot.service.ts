@@ -61,13 +61,13 @@ export class ChatwootService {
     }
   }
 
-  async createConversationIfNeeded(userIdTg: number, groubIdTg: number) {
+  async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
     try {
     const user = await UserGroup.findOne({
       where: { userIdTg }
     });
     const conversation = user?.conversationList?.find((value)=> {
-      if(value.groubIdTg === groubIdTg) {
+      if(value.groupIdTg === groupIdTg) {
         return true;
       }
       return false;
@@ -85,7 +85,7 @@ export class ChatwootService {
       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
     });
     user?.conversationList?.push({
-      groubIdTg,
+      groupIdTg,
       conversationIdChatwoot: newConversation.data.id
     })
 
