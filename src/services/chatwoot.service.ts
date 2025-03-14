@@ -30,6 +30,8 @@ export class ChatwootService {
       const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
+      console.log("denis123",response.data);
+      console.log("hristina123",response);
       if (response.data.payload.length > 0) {
         return response.data.payload[0].id;
       }
@@ -64,7 +66,7 @@ export class ChatwootService {
       });
 
       console.log("userR",userR);
-      return newContact.data.identifier;
+      return vkUserId;
   }
 
   async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
