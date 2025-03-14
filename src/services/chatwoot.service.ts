@@ -36,7 +36,11 @@ export class ChatwootService {
         return response.data.payload[0].id;
       }
       return undefined;
-    } catch (error) {
+    } catch (error: any) {
+      console.log('error',error);
+      if(error.status === 404) {
+        return undefined;
+      }
       logger.error('Chatwoot API contact Error:', error);
       throw error;
     }
