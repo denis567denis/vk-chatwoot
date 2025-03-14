@@ -25,10 +25,10 @@ export class ChatwootService {
       throw error;
     }
   }
-  //https://app.chatwoot.com/public/api/v1/inboxes/{inbox_identifier}/contacts/{contact_identifier}
   async findContact(vkUserId: any) {
     try {
-      const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts/${vkUserId}`, {
+      console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER);
+      const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts/${Number.parseInt(vkUserId)}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
       console.log("findContact.response", response);
