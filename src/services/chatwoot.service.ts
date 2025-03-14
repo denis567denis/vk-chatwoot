@@ -20,16 +20,13 @@ export class ChatwootService {
     },
   });
 
-  async forwardToChatwoot(message: ChatwootMessage) {
+  async forwardToChatwoot(message: any) {
     try {
       await this.client.post(
         `/api/v1/inboxes/${message.inboxId}/messages`,
         {
           content: message.text,
-          sender: {
-            id: `vk-${message.sender.id}`,
-            name: message.sender.name
-          },
+          senderId: message.senderId,
           attachments: message.attachments,
         }
       );
