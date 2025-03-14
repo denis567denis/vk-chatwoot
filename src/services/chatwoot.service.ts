@@ -13,7 +13,7 @@ export class ChatwootService {
   async forwardToChatwoot(conversationId: number , message: any) {
     try {
       await this.client.post(
-        `/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations/${conversationId}/messages`,
+        `/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations/${conversationId}/messages`,
         {
           content: message.text,
           message_type: 'incoming',
