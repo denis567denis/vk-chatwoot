@@ -28,7 +28,7 @@ export class ChatwootService {
   async findContact(vkUserId: any) {
     try {
       console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER);
-      const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${Number.parseInt(vkUserId)}`, {
+      const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
       console.log("findContact.response", response);
@@ -43,7 +43,6 @@ export class ChatwootService {
   }
 
   async createContact(vkUserId: any, message: any) {
-    try {
       const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts`, {
         inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
         name: message.name,
@@ -53,6 +52,9 @@ export class ChatwootService {
        headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
       });
 
+      if (!newContact) {
+        return false;
+      }
       console.log("handleWebhook.createContact.newContact", newContact);
   
       await UserGroup.upsert({
@@ -60,10 +62,6 @@ export class ChatwootService {
       });
 
       return newContact.data.id;
-    } catch (error) {
-    logger.error('Chatwoot API contact Error:', error);
-    throw error;
-    }
   }
 
   async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
