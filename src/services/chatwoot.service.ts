@@ -68,8 +68,8 @@ export class ChatwootService {
     });
     console.log('createConversationIfNeeded.response', response);
   
-    if (response.data.data.payload.length > 0) {
-      return response.data.payload[0].id;
+    if (response?.data?.data?.payload?.length > 0) {
+      return response.data.data.payload[0].id;
     }
 
     const newConversation = await this.client.post(`/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations`, {
