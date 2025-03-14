@@ -14,7 +14,7 @@ export class ChatwootService {
     try {
       console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER, "userIdTg", userIdTg, "conversationId", conversationId);
       await this.client.post(
-        `/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts/${userIdTg}/conversations/${conversationId}/messages`,
+        `/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts/${userIdTg}/conversations/${conversationId}/messages`,
         {
           content: message.text,
           message_type: 'incoming',
@@ -25,9 +25,10 @@ export class ChatwootService {
       throw error;
     }
   }
+  //https://app.chatwoot.com/public/api/v1/inboxes/{inbox_identifier}/contacts/{contact_identifier}
   async findContact(vkUserId: any) {
     try {
-      const response =  await this.client.get(`/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts/${vkUserId}`, {
+      const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
       console.log("findContact.response", response);
@@ -43,7 +44,7 @@ export class ChatwootService {
 
   async createContact(vkUserId: any, message: any) {
     try {
-      const newContact =  await this.client.post(`/public/api/v1/inboxes/${Number.parseInt(process.env.CHATWOOT_INBOX_INDENTIFER || '')}/contacts`, {
+      const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/contacts`, {
         inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
         name: message.name,
         identifier: vkUserId,
@@ -83,7 +84,7 @@ export class ChatwootService {
       return conversation.conversationIdChatwoot;
     }
 
-    const newConversation = await this.client.post(`/api/v1/accounts/${Number.parseInt(process.env.CHATWOOT_ACCOUNT_ID || '')}/conversations`, {
+    const newConversation = await this.client.post(`/api/v1/accounts/${process.env.CHATWOOT_INBOX_INDENTIFER || ''}/conversations`, {
       inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
       contact_id: userIdTg,
       status: 'open'
