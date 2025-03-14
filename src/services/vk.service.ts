@@ -20,32 +20,28 @@ export class VKService {
     console.log("event.object.message", ...event.object.message.attachments);
     return {
       text: event.object.message.text,
-      attachments:  event.object.message.attachments?.map(attachment => ({
-        url: attachment.url,
-        type: attachment.type,
-        ...(attachment.title && { title: attachment.title })
-    }))
+      attachments:  this.processAttachments(event.object.message.attachments)
     };
   }
 
-  // private async processAttachments(attachments: VKAttachment[], groupId: number) {
-  //   return Promise.all(
-  //     attachments.map(async (attachment) => {
-  //       switch (attachment.type) {
-  //         case 'photo':
-  //           return this.storage.uploadImage(
-  //             attachment.photo?.sizes.pop()?.url,
-  //             groupId
-  //           );
-  //         case 'doc':
-  //           return this.storage.uploadDoc(attachment.doc?.url, groupId);
-  //         default:
-  //           logger.warn(`Unsupported attachment type: ${attachment.type}`);
-  //           return null;
-  //       }
-  //     })
-  //   );
-  // }
+  private async processAttachments(attachments: any[]) {
+    return attachments.map(attachment => {
+      if (attachment.type === 'photo') {
+          const photo = attachment.photo;
+          const largestSize = photo.sizes.pop();
+          return { url: largestSize.url, type: 'image' };
+      }
+      if (attachment.type === 'video') {
+          const video = attachment.video;
+          return { url: video.player || video.image[0].url, type: 'video' };
+      }
+      if (attachment.type === 'doc') {
+          const doc = attachment.doc;
+          return { url: doc.url, type: 'file', title: doc.title };
+      }
+      return null;
+  }).filter(Boolean);
+  }
 
   async sendMessage(params: {
     userId: number;
