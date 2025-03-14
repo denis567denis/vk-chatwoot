@@ -14,7 +14,8 @@ export class VKController {
 
     console.log("handleWebhook.event", event);
     if (event.type === 'confirmation') {
-      return this.handleConfirmation(event, res);
+      await this.handleConfirmation(event, res);
+      return; 
     }
 
     try {
