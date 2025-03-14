@@ -6,7 +6,7 @@ export class ChatwootService {
     baseURL: process.env.CHATWOOT_URL,
     headers: {
       'api_access_token': process.env.CHATWOOT_API_TOKEN,
-      'Content-Type': 'application/json',
+      'Content-Type': ['application/json', 'charset=utf-8'],
     },
   });
 
@@ -17,8 +17,6 @@ export class ChatwootService {
         {
           content: message.text,
           message_type: 'incoming',
-          attachments: message.attachments,
-          conversation_id: conversationId
         }
       );
     } catch (error) {
