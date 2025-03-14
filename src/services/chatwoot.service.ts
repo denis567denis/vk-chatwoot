@@ -18,6 +18,7 @@ export class ChatwootService {
           content: message.text,
           message_type: 'incoming',
           attachments: message.attachments,
+          conversation_id: conversationId
         }
       );
     } catch (error) {
