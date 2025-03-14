@@ -12,8 +12,7 @@ export interface VKWebhookEvent {
   }
   
   export interface VKAttachment {
+    url: any;
     type: 'photo' | 'video' | 'doc';
-    photo?: { sizes: Array<{ url: string }> };
-    video?: { title: string; player: string };
-    doc?: { url: string; title: string };
+    title: string;
   }
