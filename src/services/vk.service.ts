@@ -16,6 +16,8 @@ export class VKService {
     this.storage = new StorageService();
   }
   async processMessage(event: VKWebhookEvent) {
+    console.log("event.object.message", event.object.message);
+    console.log("event.object.message", ...event.object.message.attachments);
     return {
       text: event.object.message.text,
       attachments:  event.object.message.attachments?.map(attachment => ({
