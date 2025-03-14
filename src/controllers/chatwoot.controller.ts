@@ -62,7 +62,7 @@ export class ChatwootController {
       });
 
       await this.syncMessages({
-        inboxId: community.chatwoot_inbox_id,
+        inboxId: Number.parseInt(process.env.CHATWOOT_INBOX_ID || ''),
         messages: vkMessages,
       });
 

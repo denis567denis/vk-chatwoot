@@ -30,8 +30,6 @@ export class VKService {
         event.object.message.attachments,
         community.group_id
       ),
-      senderId: event.object.message.from_id,
-      inboxId: community.chatwoot_inbox_id,
     };
   }
 
@@ -134,8 +132,6 @@ export class VKService {
       throw error;
     }
   }
-
-  // Сохранение фото в VK
   async savePhoto(uploadData: any): Promise<{ owner_id: number; id: number }> {
     try {
       const response = await this.client.post('photos.saveMessagesPhoto', {
@@ -149,8 +145,6 @@ export class VKService {
       throw error;
     }
   }
-
-  // Сохранение документа в VK
   async saveDoc(uploadData: any): Promise<{ owner_id: number; id: number }> {
     try {
       const response = await this.client.post('docs.save', {
@@ -163,5 +157,25 @@ export class VKService {
       logger.error('Failed to save document in VK:', error);
       throw error;
     }
+  }
+
+  async getVKUserInfo(group_id: any, vkUserId: any) {
+    const community = await VKCommunity.findOne({ 
+      where: { group_id: group_id } 
+    });
+
+    const response = await this.client.get('users.get', {
+      params: {
+          user_ids: vkUserId,
+          fields: 'photo_100',
+          access_token: community?.access_token,
+      }
+  });
+
+  const userData = response.data.response[0];
+  return {
+      name: `${userData.first_name} ${userData.last_name}`,
+      avatar: userData.photo_100
+  };
   }
 }

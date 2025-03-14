@@ -10,7 +10,4 @@ export class VKCommunity extends Model {
 
   @Column
   confirmation_code!: string;
-
-  @Column
-  chatwoot_inbox_id!: number;
 }

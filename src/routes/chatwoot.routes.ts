@@ -6,7 +6,7 @@ export const chatwootRouter = Router();
 const controller = new ChatwootController();
 
 // Вебхук для получения событий из Chatwoot
-chatwootRouter.post('/webhook', asyncHandler(controller.handleChatwootEvent));
+chatwootRouter.post('/webhook', asyncHandler((req, res) => controller.handleChatwootEvent(req, res)));
 
 // Синхронизация истории сообщений
-chatwootRouter.post('/sync/:groupId', asyncHandler(controller.syncHistory));
+chatwootRouter.post('/sync/:groupId',asyncHandler((req, res) => controller.syncHistory(req, res)));

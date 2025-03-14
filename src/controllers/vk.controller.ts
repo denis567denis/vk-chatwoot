@@ -19,9 +19,25 @@ export class VKController {
     }
 
     try {
+      let userId = await this.chatwootService.findContact(event.object.message.from_id);
+      console.log("handleWebhook.userId", userId);
+
+      if(!userId) {
+        const user = await this.vkService.getVKUserInfo(event.group_id,event.object.message.from_id);
+        console.log("handleWebhook.user", user);
+        userId = await this.chatwootService.createContact(event.object.message.from_id, {
+          name: user.name,
+          avatar: user.avatar
+        });
+
+        console.log("handleWebhook.userId", userId);
+      }
+
+      const conversationId = await this.chatwootService.createConversationIfNeeded(userId);
+      console.log("handleWebhook.conversationId", conversationId);
       const messageData: any = await this.vkService.processMessage(event);
       console.log("handleWebhook.messageData", messageData);
-      await this.chatwootService.forwardToChatwoot(messageData);
+      await this.chatwootService.forwardToChatwoot(conversationId, messageData);
       res.status(200).send('ok');
     } catch (error) {
       res.status(500).send('Internal Server Error');
@@ -39,6 +55,7 @@ export class VKController {
       res.status(404).send('Community not found');
     }
   }
+
   async getCommunitySettings(req: Request, res: Response) {
     const { groupId } = req.params;
 
@@ -55,7 +72,6 @@ export class VKController {
       res.status(200).json({
         groupId: community.group_id,
         accessToken: community.access_token,
-        chatwootInboxId: community.chatwoot_inbox_id,
         confirmation_code: community.confirmation_code
       });
       return;
@@ -67,13 +83,12 @@ export class VKController {
 
   async updateCommunitySettings(req: Request, res: Response) {
     const { groupId } = req.params;
-    const { accessToken, chatwootInboxId, confirmation_code } = req.body;
+    const { accessToken, confirmation_code } = req.body;
 
     try {
       const [community, created] = await VKCommunity.upsert({
         group_id: groupId,
         access_token: accessToken,
-        chatwoot_inbox_id: chatwootInboxId,
         confirmation_code
       });
 
@@ -81,7 +96,6 @@ export class VKController {
         message: created ? 'Settings created' : 'Settings updated',
         groupId: community.group_id,
         accessToken: community.access_token,
-        chatwootInboxId: community.chatwoot_inbox_id,
       });
     } catch (error) {
       logger.error('Failed to update community settings:', error);
