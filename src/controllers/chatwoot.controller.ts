@@ -24,7 +24,7 @@ export class ChatwootController {
         }
           
         await this.vkService.sendMessage({
-          userId: this.extractVkUserId(event.source_id),
+          userId: this.extractVkUserId(event.contact_inbox.source_id),
           text: event.content,
           attachments: await this.processAttachments([]),
           accessToken: process.env.VK_ACCESS_TOKEN || '',
