@@ -10,7 +10,7 @@ export class ChatwootService {
       'Content-Type': ['application/json', 'charset=utf-8'],
     },
   });
-  async forwardToChatwoot(conversationId: number, userIdTg: number , message: any) {
+  async forwardToChatwoot(conversationId: number, userIdTg: any , message: any) {
     try {
       console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER, "userIdTg", userIdTg, "conversationId", conversationId);
       await this.client.post(
@@ -69,7 +69,7 @@ export class ChatwootService {
       return vkUserId;
   }
 
-  async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
+  async createConversationIfNeeded(userIdTg: any, groupIdTg: number) {
     try {
       console.log("userIdTg", userIdTg);
     const user = await UserGroup.findOne({
@@ -84,7 +84,7 @@ export class ChatwootService {
     });
   
     console.log("handleWebhook.createConversationIfNeeded.conversation", conversation);
-    if (conversation?.conversationIdChatwoot) {
+    if (conversation && conversation?.conversationIdChatwoot) {
       return conversation.conversationIdChatwoot;
     }
 
