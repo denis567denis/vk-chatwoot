@@ -85,7 +85,7 @@ export class ChatwootService {
       return conversation.conversationIdChatwoot;
     }
 
-    const newConversation = await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_ID}/contacts/${userIdTg}/conversations`, {
+    const newConversation = await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${userIdTg}/conversations`, {
       headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
     });
     console.log("handleWebhook.createConversationIfNeeded.newConversation", newConversation);
