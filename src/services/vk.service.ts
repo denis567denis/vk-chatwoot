@@ -46,11 +46,14 @@ export class VKService {
     attachments: string[];
   }) {
     try {
-      const response = await this.client.post('messages.send', {
+      const response = await this.client.get('messages.send', {
+       params: {
         user_id: params.userId,
         message: params.text,
+        random_id: Math.floor(Math.random() * 100000),
         attachment: params.attachments.join(','),
         access_token: process.env.VK_ACCESS_TOKEN,
+       }
       });
       console.log("handleChatwootEvent.sendMessage.response", response);
       return response.data;
