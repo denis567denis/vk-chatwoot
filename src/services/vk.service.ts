@@ -16,7 +16,7 @@ export class VKService {
   async processMessage(event: VKWebhookEvent) {
     return {
       text: event.object.message.text,
-      attachments:  await this.processAttachments(event.object.message.attachments)
+      attachments:  event.object.message.attachments
     };
   }
 
