@@ -15,17 +15,17 @@ export class ChatwootController {
   });
 
   async handleChatwootEvent(req: Request, res: Response) {
-    const { contact_inbox, content } = req.body;
+    const event = req.body;
     console.log("handleChatwootEvent.req.body", req.body);
     try {
-        if (contact_inbox.message_type !== 'outgoing') {
+        if (event.message_type !== 'outgoing') {
           res.status(200).end();
           return;
         }
           
         await this.vkService.sendMessage({
-          userId: this.extractVkUserId(contact_inbox.source_id),
-          text: content,
+          userId: this.extractVkUserId(event.source_id),
+          text: event.content,
           attachments: await this.processAttachments([]),
           accessToken: process.env.VK_ACCESS_TOKEN || '',
         });
