@@ -52,6 +52,7 @@ export class ChatwootService {
       const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts`, {
         name: message.name,
         source_id: vkUserId,
+        identifier: vkUserId,
         avatar_url: message.avatar
      }, {
        headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
@@ -68,7 +69,7 @@ export class ChatwootService {
       return newContact.data.source_id;
   }
 
-  async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
+  async createConversationIfNeeded(userIdTg: any, groupIdTg: number) {
     try {
       console.log("userIdTg", userIdTg);
     const user = await UserGroup.findOne({
