@@ -34,6 +34,9 @@ export class ChatwootService {
       });
       console.log("response?.data", response?.data);
       if (response?.data?.source_id) {
+        await UserGroup.upsert({
+          userIdTg: vkUserId,
+        });
         return response.data.source_id;
       }
       return undefined;
