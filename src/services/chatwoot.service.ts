@@ -48,7 +48,7 @@ export class ChatwootService {
     console.log("vkUserId", vkUserId);
       const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts`, {
         name: message.name,
-        identifier: Number.parseInt(vkUserId),
+        source_id: vkUserId,
         avatar_url: message.avatar
      }, {
        headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
