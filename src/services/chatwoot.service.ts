@@ -30,8 +30,9 @@ export class ChatwootService {
       const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
-      if (response.data.payload.length > 0) {
-        return response.data.payload[0].id;
+      console.log("response?.data", response?.data);
+      if (response?.data?.source_id) {
+        return response.data.source_id;
       }
       return undefined;
     } catch (error: any) {
