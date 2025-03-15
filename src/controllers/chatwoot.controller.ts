@@ -15,11 +15,15 @@ export class ChatwootController {
   });
 
   async handleChatwootEvent(req: Request, res: Response) {
-    const { event, message } = req.body;
+    const { message, conversation } = req.body;
     console.log("handleChatwootEvent.req.body", req.body);
     try {
-      if (event === 'message_created') {
-        const result = await this.vkService.sendMessage({
+        if (message.message_type !== 'outgoing') {
+          res.status(200).end();
+          return;
+        }
+          
+        await this.vkService.sendMessage({
           userId: this.extractVkUserId(message.sender.identifier),
           text: message.content,
           attachments: await this.processAttachments(message.attachments),
@@ -27,10 +31,7 @@ export class ChatwootController {
         });
         res.status(200).json({ status: 'success' });
         return;
-      }
 
-      res.status(400).send('Unsupported event type');
-      return;
     } catch (error) {
       logger.error('Chatwoot webhook error:', error);
       res.status(500).json({ error: 'Internal server error' });

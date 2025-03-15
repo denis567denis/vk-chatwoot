@@ -5,6 +5,9 @@ export class UserGroup extends Model {
   @Column
   userIdTg!: string;
 
+  @Column
+  pubsub_token!: string;
+
   @Column({
     type: DataType.JSON,
     allowNull: true, 

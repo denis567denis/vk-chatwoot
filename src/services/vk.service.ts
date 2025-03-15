@@ -2,7 +2,6 @@ import axios, { AxiosInstance } from 'axios';
 import { VKWebhookEvent } from '../types/vk';
 import { logger } from '../config/logger';
 import { VKCommunity } from '../models/vk-community.model';
-import { UserGroup } from '../models/userGroup.model';
 
 export class VKService {
   private client: AxiosInstance;
@@ -27,7 +26,7 @@ export class VKService {
           const largestSize = photo.sizes.reduce((prev: any, current: any) =>
             (prev.width > current.width && prev.height > current.height) ? prev : current
           );
-          return { data_url: largestSize.url, type: 'image' };
+          return { url: largestSize.url, type: 'image' };
       }
       if (attachment.type === 'video') {
           const video = attachment.video;
@@ -74,38 +73,26 @@ export class VKService {
     }
   }
 
-  async getCommunityByInboxId(inboxId: number): Promise<VKCommunity | null> {
-    try {
-      const community = await VKCommunity.findOne({
-        where: { chatwoot_inbox_id: inboxId },
-      });
-      console.log("handleChatwootEvent.getCommunityByInboxId.community", community);
-      return community;
-    } catch (error) {
-      logger.error('Failed to fetch community by inbox ID:', error);
-      throw error;
-    }
-  }
-  async getMessagesHistory(params: {
-    groupId: number;
-    accessToken: string;
-    offset?: number;
-    count?: number;
-  }): Promise<any[]> {
-    try {
-      const response = await this.client.post('messages.getHistory', {
-        group_id: params.groupId,
-        access_token: params.accessToken,
-        offset: params.offset || 0,
-        count: params.count || 200,
-      });
+  // async getMessagesHistory(params: {
+  //   groupId: number;
+  //   accessToken: string;
+  //   offset?: number;
+  //   count?: number;
+  // }): Promise<any[]> {
+  //   try {
+  //     const response = await this.client.post('messages.getHistory', {
+  //       group_id: params.groupId,
+  //       access_token: params.accessToken,
+  //       offset: params.offset || 0,
+  //       count: params.count || 200,
+  //     });
 
-      return response.data.response.items;
-    } catch (error) {
-      logger.error('Failed to fetch VK messages history:', error);
-      throw error;
-    }
-  }
+  //     return response.data.response.items;
+  //   } catch (error) {
+  //     logger.error('Failed to fetch VK messages history:', error);
+  //     throw error;
+  //   }
+  // }
 
   async getVKUploadUrl(type: 'photo' | 'doc', groupId?: number): Promise<string> {
     try {

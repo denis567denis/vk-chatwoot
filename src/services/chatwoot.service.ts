@@ -11,10 +11,8 @@ export class ChatwootService {
     },
   });
 
-  //https://app.chatwoot.com/public/api/v1/inboxes/{inbox_identifier}/contacts/{contact_identifier}/conversations/{conversation_id}/messages
   async forwardToChatwoot(conversationId: number, userIdTg: number , message: any) {
     try {
-      console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER, "userIdTg", userIdTg, "conversationId", conversationId);
       await this.client.post(
         `/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${userIdTg}/conversations/${conversationId}/messages`,
         {
@@ -37,6 +35,7 @@ export class ChatwootService {
       if (response?.data?.source_id) {
         await UserGroup.upsert({
           userIdTg: vkUserId,
+          pubsub_token: response.data.pubsub_token,
         });
         return response.data.source_id;
       }
@@ -67,9 +66,25 @@ export class ChatwootService {
   
       await UserGroup.upsert({
         userIdTg: vkUserId,
+        pubsub_token: newContact.data.pubsub_token,
       });
 
       return newContact.data.source_id;
+  }
+  async addLabels(vkUserId: any, groupId: any) {
+    let resultLabels = [groupId];
+    const response = await this.client.get(`/api/v1/accounts/${process.env.CHATWOOT_ACCOUNT_ID}/contacts/${vkUserId}/labels`, {
+     headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
+    });
+    if (response?.data?.payload) {
+      resultLabels = resultLabels.concat(response.data.payload);
+    }
+  
+    await this.client.post(`/api/v1/accounts/${process.env.CHATWOOT_ACCOUNT_ID}/contacts/${vkUserId}/labels`, {
+      labels: resultLabels
+   }, {
+     headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
+    });
   }
 
   async createConversationIfNeeded(userIdTg: any, groupIdTg: number) {
@@ -100,12 +115,13 @@ export class ChatwootService {
       conversationIdChatwoot: newConversation.data.id
     })
 
-    console.log();
     await UserGroup.update({
       conversationList : user?.conversationList
     }, {
       where: { userIdTg }
     });
+
+    await this.addLabels(userIdTg, groupIdTg);
     return newConversation.data.id;
       }catch (error) {
       logger.error('Chatwoot API contact Error:', error);
