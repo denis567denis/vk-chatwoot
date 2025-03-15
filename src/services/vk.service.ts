@@ -16,7 +16,7 @@ export class VKService {
   async processMessage(event: VKWebhookEvent) {
     return {
       text: event.object.message.text,
-      attachments:  event.object.message.attachments
+      attachments:  await this.processAttachments(event.object.message.attachments)
     };
   }
 
@@ -27,7 +27,7 @@ export class VKService {
           const largestSize = photo.sizes.reduce((prev: any, current: any) =>
             (prev.width > current.width && prev.height > current.height) ? prev : current
           );
-          return { url: largestSize.url, type: 'image' };
+          return { data_url: largestSize.url, type: 'image' };
       }
       if (attachment.type === 'video') {
           const video = attachment.video;
