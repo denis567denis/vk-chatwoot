@@ -44,14 +44,13 @@ export class VKService {
     userId: number;
     text: string;
     attachments: string[];
-    accessToken: string;
   }) {
     try {
       const response = await this.client.post('messages.send', {
         user_id: params.userId,
         message: params.text,
         attachment: params.attachments.join(','),
-        access_token: params.accessToken,
+        access_token: process.env.VK_ACCESS_TOKEN,
       });
       console.log("handleChatwootEvent.sendMessage.response", response);
       return response.data;

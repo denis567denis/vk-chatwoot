@@ -27,7 +27,6 @@ export class ChatwootController {
           userId: event.conversation.contact_inbox.source_id,
           text: event.content,
           attachments: await this.processAttachments([]),
-          accessToken: process.env.VK_ACCESS_TOKEN || '',
         });
         res.status(200).json({ status: 'success' });
         return;
