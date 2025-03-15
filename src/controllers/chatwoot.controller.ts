@@ -24,7 +24,7 @@ export class ChatwootController {
         }
           
         await this.vkService.sendMessage({
-          userId: this.extractVkUserId(event.conversation.contact_inbox.source_id),
+          userId: event.conversation.contact_inbox.source_id,
           text: event.content,
           attachments: await this.processAttachments([]),
           accessToken: process.env.VK_ACCESS_TOKEN || '',
@@ -36,12 +36,6 @@ export class ChatwootController {
       logger.error('Chatwoot webhook error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
-  }
-
-  private extractVkUserId(identifier: string): number {
-    const match = identifier.match(/vk-(\d+)/);
-    if (!match) throw new Error('Invalid user identifier');
-    return parseInt(match[1], 10);
   }
 
   // async syncHistory(req: Request, res: Response) {
