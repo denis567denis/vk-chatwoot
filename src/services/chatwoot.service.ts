@@ -19,6 +19,7 @@ export class ChatwootService {
         `/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${userIdTg}/conversations/${conversationId}/messages`,
         {
           content: message.text,
+          attachments: message.attachments,
           message_type: 'incoming',
         }
       );
