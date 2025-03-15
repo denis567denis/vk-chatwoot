@@ -46,7 +46,7 @@ export class VKService {
     attachments: string[];
   }) {
     try {
-      const response = await this.client.get('messages.send', {
+      const response = await this.client.post('messages.send', {
        params: {
         user_id: params.userId,
         message: params.text,
