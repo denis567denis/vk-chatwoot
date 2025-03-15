@@ -24,7 +24,9 @@ export class VKService {
     return attachments.map(attachment => {
       if (attachment.type === 'photo') {
           const photo = attachment.photo;
-          const largestSize = photo.sizes.pop();
+          const largestSize = photo.sizes.reduce((prev: any, current: any) =>
+            (prev.width > current.width && prev.height > current.height) ? prev : current
+          );
           return { url: largestSize.url, type: 'image' };
       }
       if (attachment.type === 'video') {
