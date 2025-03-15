@@ -45,7 +45,6 @@ export class ChatwootService {
   }
 
   async createContact(vkUserId: any, message: any) {
-    console.log("vkUserId", vkUserId);
       const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts`, {
         name: message.name,
         source_id: vkUserId,
@@ -57,14 +56,12 @@ export class ChatwootService {
       if (!newContact) {
         return false;
       }
-      console.log("handleWebhook.createContact.newContact", newContact);
   
-      const [...userR] = await UserGroup.upsert({
+      await UserGroup.upsert({
         userIdTg: vkUserId,
       });
 
-      console.log("userR",userR);
-      return newContact.data.id;
+      return newContact.data.source_id;
   }
 
   async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
