@@ -10,7 +10,7 @@ export class ChatwootService {
       'Content-Type': ['application/json', 'charset=utf-8'],
     },
   });
-  async forwardToChatwoot(conversationId: number, userIdTg: any , message: any) {
+  async forwardToChatwoot(conversationId: number, userIdTg: number , message: any) {
     try {
       console.log("process.env.CHATWOOT_INBOX_INDENTIFER", process.env.CHATWOOT_INBOX_INDENTIFER, "userIdTg", userIdTg, "conversationId", conversationId);
       await this.client.post(
@@ -30,8 +30,6 @@ export class ChatwootService {
       const response =  await this.client.get(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts/${vkUserId}`, {
         headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` },
       });
-      console.log("denis123",response.data);
-      console.log("hristina123",response);
       if (response.data.payload.length > 0) {
         return response.data.payload[0].id;
       }
@@ -47,10 +45,10 @@ export class ChatwootService {
   }
 
   async createContact(vkUserId: any, message: any) {
+    console.log("vkUserId", vkUserId);
       const newContact =  await this.client.post(`/public/api/v1/inboxes/${process.env.CHATWOOT_INBOX_INDENTIFER}/contacts`, {
-        inbox_id: parseInt(process.env.CHATWOOT_INBOX_ID || ''),
         name: message.name,
-        identifier: vkUserId,
+        identifier: Number.parseInt(vkUserId),
         avatar_url: message.avatar
      }, {
        headers: { Authorization: `Bearer ${process.env.CHATWOOT_API_TOKEN}` }
@@ -66,10 +64,10 @@ export class ChatwootService {
       });
 
       console.log("userR",userR);
-      return vkUserId;
+      return newContact.data.id;
   }
 
-  async createConversationIfNeeded(userIdTg: any, groupIdTg: number) {
+  async createConversationIfNeeded(userIdTg: number, groupIdTg: number) {
     try {
       console.log("userIdTg", userIdTg);
     const user = await UserGroup.findOne({
@@ -84,7 +82,7 @@ export class ChatwootService {
     });
   
     console.log("handleWebhook.createConversationIfNeeded.conversation", conversation);
-    if (conversation && conversation?.conversationIdChatwoot) {
+    if (conversation?.conversationIdChatwoot) {
       return conversation.conversationIdChatwoot;
     }
 
